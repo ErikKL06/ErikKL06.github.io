@@ -42,6 +42,14 @@ input[disabled] {
 
 main section#keyBoard {
     /** Grid eller liknade */
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    grid-auto-rows: minmax(10rem,auto);
+    grid-gap: 1rem;
+    .col-1 {grid-column: span 1;}
+    .col-2 {grid-column: span 2;}
+    .col-3 {grid-column: span 3;}
+    .col-4 {grid-column: span 4;}
 }
 
 @media (max-width: 767px) {
@@ -63,4 +71,7 @@ main section#keyBoard {
 
     }
 
+}
+#enter {
+    background-color: green;
 }
