@@ -22,11 +22,14 @@ function init() {
 function buttonClick(e) {
     let btn = e.target.id; //id för den tangent som tryckte ner
 
-
     // kollar om siffertangent är nedtryckt
     if (btn.substring(0, 1) === 'b') {
         let digit = btn.substring(1, 2); // plockar ut siffran från id:et
+        if (arithmetic !== null) {
+            clearLCD();
+        }
         addDigit(digit);
+        e.target.style.backgroundColor
 
     } 
     else if (btn === 'comma') { // Inte en siffertangent, övriga tangenter.
@@ -35,6 +38,8 @@ function buttonClick(e) {
     else if (btn === 'add' || btn === 'sub' || btn === 'div' || btn === 'mul'){
         memory = lcd.value;
         setOperator(btn);
+        e.target.style.backgroundColor = 'lightblue';
+        console.log("rätt")   
     }
     else if(btn === 'enter'){
         calculate();
@@ -86,7 +91,6 @@ function setOperator(operator){
         arithmetic = 'x';
         document.getElementById("mul").style.backgroundColor = 'lightblue';
     }
-    clearLCD(); // lös //
 
 }
 
