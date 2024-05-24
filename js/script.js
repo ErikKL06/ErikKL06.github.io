@@ -5,7 +5,8 @@
  */
 
 let lcd = null; // displayen
-
+let lastOperand = null;
+let lastOperation = null;
 let memory = 0; // Lagrat/gamlat värdet från display
 let arithmetic = null; // Vilken beräkning som skall göras +,-, x eller /
 
@@ -31,14 +32,21 @@ function buttonClick(e) {
     else if (btn === 'comma') { // Inte en siffertangent, övriga tangenter.
         addComma();
     }
-    else if (btn !== 'enter' && btn !== 'clear'){
+    else if (btn === 'add' || btn === 'sub' || btn === 'div' || btn === 'mul'){
         memory = lcd.value;
         setOperator(btn);
     }
     else if(btn === 'enter'){
         calculate();
+        document.getElementById("div").style = 'initial';
+        document.getElementById("mul").style = 'initial';
+        document.getElementById("sub").style = 'initial';
+        document.getElementById("add").style = 'initial';
     }
-    else {
+    else if (lcd.value === ''){
+        memClear();
+    }
+    else if (btn === 'clear') {
         clearLCD();
     }
 }
@@ -63,20 +71,20 @@ function addComma() {
  */
 function setOperator(operator){
     if (operator === "add") {
-        lcd.value = '+';
         arithmetic = '+';
+        document.getElementById("add").style.backgroundColor = 'lightblue';
     }
     else if(operator === "sub") {
-        lcd.value = '-';
         arithmetic = '-';
+        document.getElementById("sub").style.backgroundColor = 'lghtblue';
     }
     else if(operator === "div") {
-        lcd.value = '/';
         arithmetic = '/';
+        document.getElementById("div").style.backgroundColor = 'lightblue';
     }
     else {
-        lcd.value = 'x';
         arithmetic = 'x';
+        document.getElementById("mul").style.backgroundColor = 'lightblue';
     }
     clearLCD(); // lös //
 
@@ -87,17 +95,38 @@ function setOperator(operator){
  */
 function calculate() {
     if (arithmetic === "+") {
-        lcd.value = parseFloat(memory) + parseFloat(lcd.value);
+        if (lastOperand === null) {
+            lastOperand = parseFloat(lcd.value);
+        }
+        lcd.value = parseFloat(memory) + lastOperand;
+        memory = lcd.value;
+        lastOperation = '+';
     }
     else if (arithmetic === "-") {
-        lcd.value = parseFloat(memory) - parseFloat(lcd.value);
+        if (lastOperand === null) {
+            lastOperand = parseFloat(lcd.value);
+        }
+        lcd.value = parseFloat(memory) - lastOperand;
+        memory = lcd.value;
+        lastOperation = '-';
     }
     else if (arithmetic === "/") {
-        lcd.value = parseFloat(memory) / parseFloat(lcd.value);
+        if (lastOperand === null) {
+            lastOperand = parseFloat(lcd.value);
+        }
+        lcd.value = parseFloat(memory) / lastOperand;
+        memory = lcd.value;
+        lastOperation = '/';
     }
     else {
-        lcd.value = parseFloat(memory) * parseFloat(lcd.value);
+        if (lastOperand === null) {
+            lastOperand = parseFloat(lcd.value);
+        }
+        lcd.value = parseFloat(memory) * lastOperand;
+        memory = lcd.value;
+        lastOperation = 'x';
     }
+    arithmetic = lastOperation;
 
 }
 
@@ -106,6 +135,9 @@ function calculate() {
 function clearLCD() {
     lcd.value = '';
     isComma = false;
+    lastOperand = null;
+    lastOperation = null;
+    console.log("clear");
 }
 
 /** Rensar allt, reset */
@@ -113,6 +145,7 @@ function memClear(){
     memory = 0;
     arithmetic = null;
     clearLCD();
+    console.log("memClear");
 }
 
 window.onload = init;
