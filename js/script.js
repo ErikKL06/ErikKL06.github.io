@@ -7,6 +7,9 @@
 let lcd = null; // displayen
 let lastOperand = null;
 let lastOperation = null;
+let check = false;
+let isComma = false;
+let isCalculated = false;
 let memory = 0; // Lagrat/gamlat värdet från display
 let arithmetic = null; // Vilken beräkning som skall göras +,-, x eller /
 
@@ -21,32 +24,50 @@ function init() {
  */
 function buttonClick(e) {
     let btn = e.target.id; //id för den tangent som tryckte ner
-
     // kollar om siffertangent är nedtryckt
     if (btn.substring(0, 1) === 'b') {
         let digit = btn.substring(1, 2); // plockar ut siffran från id:et
-        if (arithmetic !== null) {
-            clearLCD();
+        if (isCalculated === true) {
+            memClear();
         }
-        addDigit(digit);
-        e.target.style.backgroundColor
+        else if (arithmetic !== null && isComma === false) {
+            clearLCD();
+            check = true;
+        }
 
-    } 
-    else if (btn === 'comma') { // Inte en siffertangent, övriga tangenter.
-        addComma();
-    }
-    else if (btn === 'add' || btn === 'sub' || btn === 'div' || btn === 'mul'){
-        memory = lcd.value;
-        setOperator(btn);
-        e.target.style.backgroundColor = 'lightblue';
-        console.log("rätt")   
-    }
-    else if(btn === 'enter'){
-        calculate();
+        addDigit(digit);
+        isComma = false;
         document.getElementById("div").style = 'initial';
         document.getElementById("mul").style = 'initial';
         document.getElementById("sub").style = 'initial';
         document.getElementById("add").style = 'initial';
+        document.getElementById("clear").innerHTML = "CLEAR";
+        isCalculated = false; 
+
+    }
+    else if (btn === 'comma') { // Inte en siffertangent, övriga tangenter.
+        addComma();
+        isCalculated = false; 
+    } 
+    else if (btn === 'add' || btn === 'sub' || btn === 'div' || btn === 'mul'){
+        if (check === true) {
+            calculate();
+            check = false;
+        }
+        memory = lcd.value;
+        setOperator(btn);
+        e.target.style.backgroundColor = 'lightblue';
+        document.getElementById("clear").innerHTML = "CLEAR";
+        isCalculated = false;  
+    }
+    else if(btn === 'enter'){
+        calculate();
+        check = false;
+        document.getElementById("div").style = 'initial';
+        document.getElementById("mul").style = 'initial';
+        document.getElementById("sub").style = 'initial';
+        document.getElementById("add").style = 'initial';
+        document.getElementById("clear").innerHTML = "CLEAR";
     }
     else if (lcd.value === ''){
         memClear();
@@ -54,6 +75,7 @@ function buttonClick(e) {
     else if (btn === 'clear') {
         clearLCD();
     }
+
 }
 
 /**
@@ -68,6 +90,7 @@ function addDigit(digit) {
  */
 function addComma() {
     lcd.value += '.';
+    isComma = true;
 }
 
 /**
@@ -132,6 +155,8 @@ function calculate() {
     }
     arithmetic = lastOperation;
 
+    isCalculated = true;
+
 }
 
 
@@ -142,14 +167,20 @@ function clearLCD() {
     lastOperand = null;
     lastOperation = null;
     console.log("clear");
+    if(lcd.value === '') {
+        document.getElementById("clear").innerHTML = "MEMCLEAR";
+    }
+
 }
 
 /** Rensar allt, reset */
 function memClear(){
+    check = false;
     memory = 0;
     arithmetic = null;
     clearLCD();
     console.log("memClear");
+    document.getElementById("clear").innerHTML = "CLEAR";
 }
 
 window.onload = init;
